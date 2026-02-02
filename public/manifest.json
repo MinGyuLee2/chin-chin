@@ -1,0 +1,27 @@
+{
+  "name": "친친 - 친구를 소개하는 가장 쉬운 방법",
+  "short_name": "친친",
+  "description": "인스타 스토리 하나로 친구를 소개하세요. 블라인드 프로필로 시작해서 대화로 알아가세요.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FF6B6B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["social", "lifestyle"],
+  "lang": "ko",
+  "dir": "ltr"
+}
