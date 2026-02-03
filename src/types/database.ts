@@ -124,6 +124,7 @@ export type Database = {
           status: "pending" | "active" | "rejected" | "expired" | "completed";
           profile_revealed: boolean;
           profile_revealed_at: string | null;
+          reveal_requested_by: string | null;
           last_message_at: string | null;
           expires_at: string | null;
           created_at: string;
@@ -136,6 +137,7 @@ export type Database = {
           status?: "pending" | "active" | "rejected" | "expired" | "completed";
           profile_revealed?: boolean;
           profile_revealed_at?: string | null;
+          reveal_requested_by?: string | null;
           last_message_at?: string | null;
           expires_at?: string | null;
           created_at?: string;
@@ -148,6 +150,7 @@ export type Database = {
           status?: "pending" | "active" | "rejected" | "expired" | "completed";
           profile_revealed?: boolean;
           profile_revealed_at?: string | null;
+          reveal_requested_by?: string | null;
           last_message_at?: string | null;
           expires_at?: string | null;
           created_at?: string;

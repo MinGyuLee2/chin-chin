@@ -90,8 +90,10 @@ export function filterContactInfo(text: string): {
   let hasContact = false;
 
   CONTACT_PATTERNS.forEach((pattern) => {
+    pattern.lastIndex = 0; // Reset global regex state
     if (pattern.test(filtered)) {
       hasContact = true;
+      pattern.lastIndex = 0; // Reset again before replace
       filtered = filtered.replace(pattern, "[연락처 정보 삭제됨]");
     }
   });

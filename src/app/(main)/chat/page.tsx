@@ -152,7 +152,7 @@ function ChatListContent() {
 
       switch (tab) {
         case "active":
-          return room.status === "active";
+          return room.status === "active" || room.status === "completed";
         case "pending":
           // Requests I sent that are pending
           return room.status === "pending" && isRequester;
@@ -319,7 +319,7 @@ function ChatRoomCard({
   };
 
   const href =
-    room.status === "active"
+    room.status === "active" || room.status === "completed"
       ? `/chat/${room.id}`
       : room.status === "pending" && !isRequester
         ? `/chat/request/${room.id}`
