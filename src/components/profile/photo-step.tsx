@@ -17,7 +17,6 @@ interface PhotoStepProps {
 
 export function PhotoStep({ defaultValues, onNext }: PhotoStepProps) {
   const [preview, setPreview] = useState<string | null>(null);
-  const [blurredPreview, setBlurredPreview] = useState<string | null>(null);
 
   const {
     setValue,
@@ -31,32 +30,9 @@ export function PhotoStep({ defaultValues, onNext }: PhotoStepProps) {
   });
 
   const processImage = useCallback((file: File) => {
-    // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      setPreview(dataUrl);
-
-      // Create blurred preview using canvas
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        // Set canvas size
-        const maxSize = 400;
-        const ratio = Math.min(maxSize / img.width, maxSize / img.height);
-        canvas.width = img.width * ratio;
-        canvas.height = img.height * ratio;
-
-        // Apply blur filter
-        ctx.filter = "blur(20px)";
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        setBlurredPreview(canvas.toDataURL("image/jpeg", 0.8));
-      };
-      img.src = dataUrl;
+      setPreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
   }, []);
@@ -85,7 +61,6 @@ export function PhotoStep({ defaultValues, onNext }: PhotoStepProps) {
 
   const clearPhoto = () => {
     setPreview(null);
-    setBlurredPreview(null);
     setValue("photo", undefined as any);
   };
 
@@ -140,15 +115,11 @@ export function PhotoStep({ defaultValues, onNext }: PhotoStepProps) {
                     공개될 모습
                   </p>
                   <div className="relative aspect-square overflow-hidden rounded-xl">
-                    {blurredPreview ? (
-                      <img
-                        src={blurredPreview}
-                        alt="Blurred"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full animate-pulse bg-muted" />
-                    )}
+                    <img
+                      src={preview}
+                      alt="Blurred"
+                      className="h-full w-full object-cover blur-xl scale-110"
+                    />
                   </div>
                 </div>
               </div>

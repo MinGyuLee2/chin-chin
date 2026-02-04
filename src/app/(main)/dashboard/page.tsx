@@ -11,7 +11,7 @@ import {
   Copy,
   Trash2,
   LogOut,
-  TrendingUp,
+  Heart,
   Ban,
   ChevronDown,
   ChevronUp,
@@ -94,11 +94,7 @@ export default function DashboardPage() {
         });
         return;
       }
-      setProfiles((prev) =>
-        prev.map((p) =>
-          p.id === deleteTarget ? { ...p, is_active: false } : p
-        )
-      );
+      setProfiles((prev) => prev.filter((p) => p.id !== deleteTarget));
       toast({
         title: "삭제 완료",
         description: "프로필이 삭제되었어요",
@@ -211,12 +207,12 @@ export default function DashboardPage() {
             <Card>
               <CardContent className="p-3 text-center">
                 <div className="flex items-center justify-center gap-0.5">
-                  <TrendingUp className="h-3.5 w-3.5 text-green-600" />
-                  <span className="text-xl font-bold text-green-600">
+                  <Heart className="h-3.5 w-3.5 text-primary fill-primary" />
+                  <span className="text-xl font-bold text-primary">
                     {conversionRate}%
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">전환율</div>
+                <div className="text-xs text-muted-foreground">매칭률</div>
               </CardContent>
             </Card>
           </div>

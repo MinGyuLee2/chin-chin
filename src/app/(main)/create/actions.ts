@@ -125,7 +125,7 @@ export async function createProfile(data: ProfileFormData) {
       mbti: validData.mbti || null,
       music_genre: validData.musicGenre || null,
       instagram_id: validData.instagramId || null,
-      kakao_open_chat_id: validData.kakaoOpenChatId || null,
+      kakao_open_chat_id: null,
       expires_at: expiresAt.toISOString(),
     };
 

@@ -327,8 +327,10 @@ export async function acceptProfileReveal(roomId: string) {
       profile: {
         originalPhotoUrl: room.profile.original_photo_url,
         instagramId: room.profile.instagram_id,
-        kakaoOpenChatId: room.profile.kakao_open_chat_id,
         name: room.profile.name,
+        interestTags: room.profile.interest_tags,
+        mbti: room.profile.mbti,
+        musicGenre: room.profile.music_genre,
       },
     };
   } catch (error) {

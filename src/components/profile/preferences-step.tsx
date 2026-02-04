@@ -48,7 +48,6 @@ export function PreferencesStep({
       mbti: defaultValues?.mbti,
       musicGenre: defaultValues?.musicGenre,
       instagramId: defaultValues?.instagramId,
-      kakaoOpenChatId: defaultValues?.kakaoOpenChatId,
     },
   });
 
@@ -190,19 +189,6 @@ export function PreferencesStep({
             )}
           </div>
 
-          {/* Kakao Open Chat */}
-          <div className="space-y-2">
-            <Label htmlFor="kakaoOpenChatId">카카오톡 오픈채팅 링크</Label>
-            <Input
-              id="kakaoOpenChatId"
-              placeholder="https://open.kakao.com/..."
-              error={!!errors.kakaoOpenChatId}
-              {...register("kakaoOpenChatId")}
-            />
-            <p className="text-xs text-muted-foreground">
-              프로필 공개 시 상대방에게 보여져요
-            </p>
-          </div>
         </CardContent>
       </Card>
 

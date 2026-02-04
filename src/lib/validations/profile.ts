@@ -67,7 +67,6 @@ export const preferencesSchema = z.object({
     .refine((val) => !val || /^[a-zA-Z0-9_.]{1,30}$/.test(val), {
       message: "올바른 인스타그램 아이디를 입력해주세요",
     }),
-  kakaoOpenChatId: z.string().optional(),
 });
 
 // Combined schema for full profile
