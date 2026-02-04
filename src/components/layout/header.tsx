@@ -95,6 +95,13 @@ export function Header({ className, transparent }: HeaderProps) {
             <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
           ) : user ? (
             <>
+              <Link href="/dashboard">
+                <Avatar
+                  src={user.profile_image_url}
+                  alt={user.nickname || "프로필"}
+                  size="sm"
+                />
+              </Link>
               <Link
                 href="/notifications"
                 className="relative flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-muted"
@@ -105,13 +112,6 @@ export function Header({ className, transparent }: HeaderProps) {
                     {unreadCount > 99 ? "99+" : unreadCount}
                   </span>
                 )}
-              </Link>
-              <Link href="/dashboard">
-                <Avatar
-                  src={user.profile_image_url}
-                  alt={user.nickname || "프로필"}
-                  size="sm"
-                />
               </Link>
             </>
           ) : (

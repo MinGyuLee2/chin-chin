@@ -175,8 +175,8 @@ const config = {
 | Task ID | Task | 상세 내용 | 완료 조건 |
 |---------|------|----------|----------|
 | 2.2.1 | 루트 레이아웃 | 메타데이터, 폰트, 프로바이더 | layout.tsx |
-| 2.2.2 | 헤더 컴포넌트 | 로고, 로그인/프로필 버튼 | 반응형 동작 |
-| 2.2.3 | 모바일 네비게이션 | 하단 탭바 (홈, 생성, 채팅, 프로필) | 터치 영역 확보 |
+| 2.2.2 | 헤더 컴포넌트 | 로고, 알림 벨(배지), 로그인/프로필 버튼 | 반응형 동작 |
+| 2.2.3 | 모바일 네비게이션 | 하단 탭바 (홈, 소개하기, 채팅, 내 정보) + 상단 헤더 알림 벨 아이콘 | 터치 영역 확보 |
 | 2.2.4 | 페이지 전환 애니메이션 | Framer Motion 적용 | 부드러운 전환 |
 
 **컴포넌트 구조:**
@@ -241,7 +241,6 @@ export const profileSchema = z.object({
   mbti: z.string().length(4).optional(),
   musicGenre: z.string().optional(),
   instagramId: z.string().optional(),
-  kakaoOpenChatId: z.string().optional(),
 });
 ```
 
@@ -291,7 +290,7 @@ export async function POST(request: Request) {
 | 3.3.2 | Short ID 생성 | nanoid(8), 충돌 검사 | 고유 ID 보장 |
 | 3.3.3 | 링크 생성 완료 페이지 | 링크 복사, QR 코드, 공유 버튼 | 클립보드 복사 |
 | 3.3.4 | 인스타 스토리 공유 | Web Share API, 딥링크 | 인스타 앱 열림 |
-| 3.3.5 | 카카오톡 알림 발송 | 프로필 생성 알림 (소개 대상자) | 알림 수신 |
+| 3.3.5 | 인앱 알림 발송 | 프로필 생성 알림 (소개 대상자) | 알림 수신 |
 
 ### Week 4: 블라인드 프로필 뷰어
 
@@ -337,7 +336,7 @@ export default async function BlindProfilePage({
 | 4.2.1 | 대화 신청 버튼 | 로그인 체크, 중복 신청 방지 | 상태별 UI |
 | 4.2.2 | 대화 신청 API | `POST /api/chat/request` | chat_room 생성 |
 | 4.2.3 | 신청 완료 모달 | 성공 메시지, 다음 단계 안내 | 애니메이션 |
-| 4.2.4 | 카카오톡 알림 | 소개 대상자에게 신청 알림 | 알림 수신 |
+| 4.2.4 | 인앱 알림 | 소개 대상자에게 신청 알림 (헤더 벨 아이콘 배지) | 알림 수신 |
 
 **비즈니스 규칙 검증:**
 ```typescript
@@ -408,12 +407,13 @@ pending → active (수락) → completed/expired
 **채팅 컴포넌트 구조:**
 ```
 src/components/chat/
-├── ChatRoom.tsx           # 채팅방 컨테이너
-├── MessageList.tsx        # 메시지 목록 (무한 스크롤)
-├── MessageBubble.tsx      # 개별 메시지
-├── ChatInput.tsx          # 입력창
-├── ChatHeader.tsx         # 상대방 정보, 타이머
-└── ProfileRevealButton.tsx # 공개 요청 버튼
+├── ChatRoom.tsx              # 채팅방 컨테이너
+├── MessageList.tsx           # 메시지 목록 (무한 스크롤)
+├── MessageBubble.tsx         # 개별 메시지
+├── ChatInput.tsx             # 입력창
+├── ChatHeader.tsx            # 상대방 정보, 타이머
+├── ProfileRevealButton.tsx   # 공개 요청 버튼
+└── ProfileRevealedView.tsx   # 공개 후 프로필 + 대화 주제 제안
 ```
 
 **Realtime 구독:**
@@ -458,7 +458,7 @@ export function useRealtimeMessages(roomId: string) {
 | 6.1.2 | 공개 요청 API | 상대방에게 요청 전송 | 알림 발송 |
 | 6.1.3 | 공개 수락 UI | 수락/거절 선택, 확인 다이얼로그 | UI 표시 |
 | 6.1.4 | 공개 수락 처리 | 양쪽 프로필 공개, 원본 사진 표시 | 정보 노출 |
-| 6.1.5 | SNS 연결 버튼 | 인스타그램, 카카오톡 딥링크 | 앱 연결 |
+| 6.1.5 | SNS 연결 + 대화 주제 | 인스타그램 딥링크, 취향 기반 대화 주제 3개 제안 | 앱 연결, 주제 표시 |
 
 **프로필 공개 후 표시 정보:**
 ```typescript
@@ -466,17 +466,19 @@ interface RevealedProfile {
   name: string;
   originalPhotoUrl: string;  // 블러 해제
   instagramId?: string;
-  kakaoOpenChatId?: string;
+  interestTags?: string[];   // 취향 태그 (대화 주제 생성용)
+  mbti?: string;             // MBTI (대화 주제 생성용)
+  musicGenre?: string;       // 음악 장르 (대화 주제 생성용)
 }
 ```
 
-#### Day 3-4: 카카오톡 알림
+#### Day 3-4: 인앱 알림 시스템
 
 | Task ID | Task | 상세 내용 | 완료 조건 |
 |---------|------|----------|----------|
-| 6.2.1 | 카카오 메시지 API 연동 | 나에게 보내기 (Kakao Memo) | API 호출 성공 |
-| 6.2.2 | 알림 템플릿 정의 | 각 이벤트별 메시지 포맷 | 6개 템플릿 |
-| 6.2.3 | 알림 발송 서비스 | 큐 기반, 재시도 로직 | 안정적 발송 |
+| 6.2.1 | Supabase Realtime 알림 | 헤더 벨 아이콘 실시간 배지 업데이트 | 실시간 반영 |
+| 6.2.2 | 알림 센터 페이지 | `/notifications` 알림 목록, 읽음 처리 | 목록 표시 |
+| 6.2.3 | 알림 타입별 처리 | 각 이벤트별 메시지 포맷 및 링크 | 6개 타입 |
 | 6.2.4 | 알림 설정 (선택) | 사용자별 알림 on/off | 설정 저장 |
 
 **알림 이벤트:**
@@ -485,7 +487,7 @@ enum NotificationType {
   PROFILE_CREATED = 'profile_created',       // 내 프로필이 생성됨
   CHAT_REQUESTED = 'chat_requested',         // 대화 신청 받음
   CHAT_ACCEPTED = 'chat_accepted',           // 신청이 수락됨
-  NEW_MESSAGE = 'new_message',               // 새 메시지
+  CHAT_REJECTED = 'chat_rejected',           // 신청이 거절됨
   REVEAL_REQUESTED = 'reveal_requested',     // 프로필 공개 요청
   REVEAL_ACCEPTED = 'reveal_accepted',       // 프로필 공개됨
 }
@@ -512,7 +514,7 @@ enum NotificationType {
 | 7.1.1 | 대시보드 레이아웃 | 카드 그리드, 필터 탭 | 반응형 |
 | 7.1.2 | 프로필 링크 카드 | 썸네일, 통계, 상태 배지 | 정보 표시 |
 | 7.1.3 | 필터/정렬 | 활성/만료/성공, 최신순 | 필터 동작 |
-| 7.1.4 | 상세 통계 모달 | 조회수, 신청수, 대화수, 공개 여부 | 통계 표시 |
+| 7.1.4 | 상세 통계 | 활성 링크, 총 조회수, 대화 신청, 매칭률(하트 아이콘) | 통계 카드 표시 |
 
 **대시보드 데이터 구조:**
 ```typescript

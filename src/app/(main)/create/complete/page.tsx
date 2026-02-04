@@ -118,17 +118,26 @@ function CreateCompleteContent() {
     }
   };
 
-  const handleInstagramShare = () => {
+  const handleInstagramShare = async () => {
     // Copy link first
-    navigator.clipboard.writeText(profileUrl);
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+    } catch {
+      // clipboard may fail silently
+    }
+
     toast({
-      title: "링크 복사됨",
-      description: "인스타그램 스토리에 붙여넣기 해주세요!",
+      title: "링크가 복사되었어요!",
+      description: "스토리에서 링크 스티커를 추가하고 붙여넣기 하세요 📎",
       variant: "success",
     });
 
-    // Open Instagram
-    window.open("instagram://story-camera", "_blank");
+    // Try opening Instagram story camera
+    // On mobile, this opens the Instagram app's story camera
+    // The user needs to manually add a link sticker and paste
+    setTimeout(() => {
+      window.open("instagram://story-camera", "_blank");
+    }, 500);
   };
 
   if (isLoading) {

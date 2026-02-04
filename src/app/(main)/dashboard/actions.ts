@@ -22,12 +22,12 @@ export async function deleteProfile(profileId: string) {
       return { error: "권한이 없어요" };
     }
 
-    const { error: updateError } = await supabase
+    const { error: deleteError } = await supabase
       .from("profiles")
-      .update({ is_active: false } as never)
+      .delete()
       .eq("id", profileId);
 
-    if (updateError) return { error: "삭제에 실패했어요" };
+    if (deleteError) return { error: "삭제에 실패했어요" };
 
     return { success: true };
   } catch (error) {
