@@ -30,12 +30,16 @@ function LoginContent() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-8 text-center">
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-primary-light/30 to-white px-5">
+      {/* Decorative blobs */}
+      <div className="absolute -right-32 top-1/4 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -left-32 bottom-1/4 h-64 w-64 rounded-full bg-secondary/5 blur-3xl" />
+
+      <div className="relative w-full max-w-sm space-y-10 text-center">
         <div>
-          <Logo size="lg" asLink={false} className="mb-4" />
-          <h1 className="text-2xl font-bold">시작하기</h1>
-          <p className="mt-2 text-muted-foreground">
+          <Logo size="lg" asLink={false} className="mb-6" />
+          <h1 className="text-2xl font-bold tracking-tight">시작하기</h1>
+          <p className="mt-3 text-gray-600">
             카카오 계정으로 간편하게 로그인하세요
           </p>
         </div>

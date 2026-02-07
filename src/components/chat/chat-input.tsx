@@ -69,9 +69,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
             maxLength={MAX_LENGTH}
             rows={1}
             className={cn(
-              "w-full resize-none rounded-2xl border bg-muted px-4 py-2.5 text-sm outline-none transition-colors",
+              "w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none transition-all duration-200",
               "placeholder:text-muted-foreground",
-              "focus:border-primary focus:bg-white",
+              "focus:border-primary focus:bg-white focus:shadow-[0_0_0_3px_rgba(255,107,107,0.1)]",
               disabled && "cursor-not-allowed opacity-50"
             )}
           />
@@ -90,7 +90,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           size="sm"
           onClick={handleSend}
           disabled={!canSend}
-          className="mb-0.5 h-9 w-9 shrink-0 rounded-full p-0"
+          className="mb-0.5 h-10 w-10 shrink-0 rounded-full p-0"
         >
           <Send className="h-4 w-4" />
         </Button>

@@ -83,7 +83,7 @@ export function Header({ className, transparent }: HeaderProps) {
       className={cn(
         "sticky top-0 z-40 w-full",
         transparent ? "bg-transparent" : "bg-white/80 backdrop-blur-soft",
-        !transparent && "border-b border-border/50",
+        !transparent && "shadow-[0_1px_0_0_rgba(0,0,0,0.06)]",
         className
       )}
     >
@@ -104,7 +104,7 @@ export function Header({ className, transparent }: HeaderProps) {
               </Link>
               <Link
                 href="/notifications"
-                className="relative flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-muted"
+                className="relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 hover:bg-gray-100"
               >
                 <Bell className="h-5 w-5 text-muted-foreground" />
                 {unreadCount > 0 && (

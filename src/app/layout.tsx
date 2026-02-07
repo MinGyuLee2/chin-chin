@@ -1,14 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_KR, Righteous } from "next/font/google";
+import { Righteous } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-
-const notoSansKr = Noto_Sans_KR({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-pretendard",
-  display: "swap",
-});
 
 const righteous = Righteous({
   weight: "400",
@@ -88,7 +81,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body
-        className={`${notoSansKr.variable} ${righteous.variable} font-sans`}
+        className={`${righteous.variable} font-sans`}
       >
         <Providers>{children}</Providers>
       </body>

@@ -104,9 +104,9 @@ export function ChatHeader({
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex items-center gap-3 border-b bg-white px-3 py-2">
+      <header className="sticky top-0 z-40 flex items-center gap-3 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] bg-white px-3 py-2">
         {/* Back button */}
-        <button onClick={() => router.push("/chat")} className="p-1">
+        <button onClick={() => router.push("/chat")} className="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-gray-50">
           <ArrowLeft className="h-5 w-5" />
         </button>
 

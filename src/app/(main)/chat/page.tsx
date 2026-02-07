@@ -272,9 +272,9 @@ function ChatListContent() {
                   e.stopPropagation();
                   setActiveTab(tab.key);
                 }}
-                className={`relative flex flex-1 items-center justify-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${activeTab === tab.key
+                className={`relative flex flex-1 items-center justify-center gap-2 border-b-[3px] px-4 py-3 text-sm font-medium transition-all duration-200 ${activeTab === tab.key
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  : "border-transparent text-gray-500 hover:text-foreground"
                   }`}
               >
                 <tab.icon className="h-4 w-4" />

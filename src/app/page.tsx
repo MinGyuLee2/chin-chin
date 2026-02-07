@@ -54,33 +54,33 @@ export default function HomePage() {
 
       <main className="min-h-screen">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-primary-light to-white px-4 pb-16 pt-20">
+        <section className="relative min-h-[85vh] overflow-hidden bg-gradient-to-b from-primary-light to-white px-5 pb-24 pt-28">
           <div className="mx-auto max-w-lg text-center">
             {/* Social Proof Badges */}
-            <div className="mb-6 flex flex-wrap justify-center gap-3">
-              <div className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-sm shadow-sm backdrop-blur-sm">
+            <div className="mb-8 flex flex-wrap justify-center gap-3">
+              <div className="flex items-center gap-1.5 rounded-full bg-white/80 px-3.5 py-2 text-sm shadow-card-border backdrop-blur-sm">
                 <span className="text-lg">🔥</span>
                 <span>오늘 <span className="font-bold text-primary">127</span>명 매칭</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-sm shadow-sm backdrop-blur-sm">
+              <div className="flex items-center gap-1.5 rounded-full bg-white/80 px-3.5 py-2 text-sm shadow-card-border backdrop-blur-sm">
                 <span className="text-lg">💬</span>
                 <span><span className="font-bold text-primary">1,234</span>개 대화 진행중</span>
               </div>
             </div>
 
-            <Logo size="xl" asLink={false} className="mb-6" />
+            <Logo size="xl" asLink={false} className="mb-8" />
 
-            <h1 className="mb-3 text-3xl font-bold leading-tight text-foreground">
+            <p className="mb-3 text-base font-semibold text-primary">
+              친구가 소개해주니까 믿을 수 있어요
+            </p>
+
+            <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground">
               친구를 소개하는
               <br />
               가장 쉬운 방법
             </h1>
 
-            <p className="mb-2 text-lg font-medium text-primary">
-              친구가 소개해주니까 믿을 수 있어요
-            </p>
-
-            <p className="mb-8 text-muted-foreground">
+            <p className="mb-10 text-gray-600">
               인스타 스토리 하나로 시작하는 블라인드 소개팅
             </p>
 
@@ -104,30 +104,31 @@ export default function HomePage() {
           </div>
 
           {/* Decorative elements */}
-          <div className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
         </section>
 
         {/* How it works */}
-        <section className="px-4 py-16">
+        <section className="px-5 py-20">
           <div className="mx-auto max-w-lg">
-            <h2 className="mb-8 text-center text-2xl font-bold">이렇게 진행돼요</h2>
+            <h2 className="mb-10 text-center text-2xl font-bold">이렇게 진행돼요</h2>
 
-            <div className="space-y-6">
+            <div className="space-y-0">
               {steps.map((step, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-light">
+                <div key={index} className="relative flex items-start gap-4 pb-8">
+                  {/* Connector line */}
+                  {index < steps.length - 1 && (
+                    <div className="absolute left-6 top-14 h-[calc(100%-3rem)] w-px bg-gray-200" />
+                  )}
+                  <div className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-light">
                     <step.icon className="h-6 w-6 text-primary" />
                   </div>
                   <div className="pt-1">
                     <h3 className="font-bold text-foreground">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="mt-0.5 text-sm text-gray-600">
                       {step.description}
                     </p>
                   </div>
-                  {index < steps.length - 1 && (
-                    <div className="absolute left-10 mt-14 h-8 w-0.5 bg-primary-light" />
-                  )}
                 </div>
               ))}
             </div>
@@ -135,18 +136,18 @@ export default function HomePage() {
         </section>
 
         {/* Features */}
-        <section className="bg-muted px-4 py-16">
+        <section className="bg-gray-50 px-5 py-20">
           <div className="mx-auto max-w-lg">
-            <h2 className="mb-8 text-center text-2xl font-bold">친친이 특별한 이유</h2>
+            <h2 className="mb-10 text-center text-2xl font-bold">친친이 특별한 이유</h2>
 
             <div className="grid grid-cols-2 gap-4">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="rounded-2xl bg-white p-4 shadow-soft"
+                  className="rounded-2xl bg-white p-5 shadow-card-border transition-all duration-200 hover:shadow-card-border-hover"
                 >
                   <h3 className="font-bold text-primary">{feature.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className="mt-1.5 text-sm text-gray-600">
                     {feature.description}
                   </p>
                 </div>
@@ -156,12 +157,12 @@ export default function HomePage() {
         </section>
 
         {/* CTA */}
-        <section className="px-4 py-16">
+        <section className="px-5 py-24">
           <div className="mx-auto max-w-lg text-center">
-            <h2 className="mb-4 text-2xl font-bold">
+            <h2 className="mb-4 text-3xl font-bold tracking-tight">
               지금 친구를 소개해보세요
             </h2>
-            <p className="mb-8 text-muted-foreground">
+            <p className="mb-10 text-gray-600">
               5분이면 프로필 링크를 만들 수 있어요
             </p>
 

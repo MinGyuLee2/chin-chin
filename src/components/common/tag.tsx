@@ -34,11 +34,11 @@ export function Tag({
     <span
       onClick={onClick}
       className={cn(
-        "inline-flex items-center rounded-full font-medium transition-all",
-        variantClasses[variant],
+        "inline-flex items-center rounded-full font-medium transition-all duration-200",
+        !selected && variantClasses[variant],
         sizeClasses[size],
         isInteractive && "cursor-pointer hover:opacity-80 active:scale-95",
-        selected && "ring-2 ring-primary ring-offset-2",
+        selected && "bg-primary text-white shadow-[0_2px_8px_rgba(255,107,107,0.3)]",
         className
       )}
     >

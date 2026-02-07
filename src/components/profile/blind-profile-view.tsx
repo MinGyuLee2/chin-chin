@@ -194,7 +194,7 @@ export function BlindProfileView({ profile }: BlindProfileViewProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mb-6 rounded-xl bg-primary-light p-4 text-center"
+          className="mb-6 rounded-2xl bg-gradient-to-r from-primary-light to-secondary/10 p-5 text-center"
         >
           <p className="text-sm text-primary">
             💕 친구가 직접 소개해준 프로필이에요

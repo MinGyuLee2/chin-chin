@@ -154,9 +154,9 @@ export default function DashboardPage() {
     <>
       <Header />
 
-      <main className="min-h-screen bg-muted pb-24">
+      <main className="min-h-screen bg-gray-50 pb-24">
         {/* User info header */}
-        <div className="bg-white px-4 py-6">
+        <div className="bg-white px-5 py-6 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
           <div className="mx-auto flex max-w-lg items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar
@@ -166,7 +166,7 @@ export default function DashboardPage() {
               />
               <div>
                 <h1 className="text-xl font-bold">{user?.nickname}</h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600">
                   {stats.total}개의 소개 · {stats.totalViews}회 조회
                 </p>
               </div>
@@ -178,41 +178,41 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats cards */}
-        <div className="px-4 py-4">
-          <div className="mx-auto grid max-w-lg grid-cols-4 gap-2">
+        <div className="px-5 py-4">
+          <div className="mx-auto grid max-w-lg grid-cols-2 gap-3">
             <Card>
-              <CardContent className="p-3 text-center">
-                <div className="text-2xl font-bold text-primary">
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-primary">
                   {stats.active}
                 </div>
-                <div className="text-xs text-muted-foreground">활성 링크</div>
+                <div className="mt-1 text-sm text-gray-600">활성 링크</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-3 text-center">
-                <div className="text-2xl font-bold text-secondary">
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-secondary">
                   {stats.totalViews}
                 </div>
-                <div className="text-xs text-muted-foreground">총 조회수</div>
+                <div className="mt-1 text-sm text-gray-600">총 조회수</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-3 text-center">
-                <div className="text-2xl font-bold text-primary">
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-primary">
                   {stats.totalRequests}
                 </div>
-                <div className="text-xs text-muted-foreground">대화 신청</div>
+                <div className="mt-1 text-sm text-gray-600">대화 신청</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-3 text-center">
-                <div className="flex items-center justify-center gap-0.5">
-                  <Heart className="h-3.5 w-3.5 text-primary fill-primary" />
-                  <span className="text-xl font-bold text-primary">
+              <CardContent className="p-4 text-center">
+                <div className="flex items-center justify-center gap-1">
+                  <Heart className="h-4 w-4 text-primary fill-primary" />
+                  <span className="text-3xl font-bold text-primary">
                     {conversionRate}%
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">매칭률</div>
+                <div className="mt-1 text-sm text-gray-600">매칭률</div>
               </CardContent>
             </Card>
           </div>
@@ -230,8 +230,8 @@ export default function DashboardPage() {
         )}
 
         {/* Filter tabs */}
-        <div className="px-4 pb-4">
-          <div className="mx-auto flex max-w-lg gap-2 overflow-x-auto no-scrollbar">
+        <div className="px-5 pb-4">
+          <div className="mx-auto flex max-w-lg gap-2 overflow-x-auto no-scrollbar scroll-smooth snap-x">
             {[
               { key: "all", label: "전체" },
               { key: "active", label: "활성" },
@@ -241,9 +241,9 @@ export default function DashboardPage() {
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key as FilterType)}
-                className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${filter === tab.key
-                    ? "bg-primary text-white"
-                    : "bg-white text-muted-foreground hover:bg-muted"
+                className={`shrink-0 snap-start rounded-full px-4 h-9 text-sm font-medium transition-all duration-200 ${filter === tab.key
+                    ? "bg-primary text-white shadow-[0_2px_8px_rgba(255,107,107,0.3)]"
+                    : "bg-white text-gray-600 shadow-card-border hover:shadow-card-border-hover"
                   }`}
               >
                 {tab.label}
@@ -253,7 +253,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Profile list */}
-        <div className="px-4">
+        <div className="px-5">
           <div className="mx-auto max-w-lg space-y-4">
             {isLoading ? (
               <div className="space-y-4">
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                       <CardContent className="p-4">
                         <div className="flex gap-4">
                           {/* Thumbnail */}
-                          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
+                          <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl">
                             <img
                               src={profile.photo_url}
                               alt=""
