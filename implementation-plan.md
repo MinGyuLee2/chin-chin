@@ -721,6 +721,13 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] 아이콘 및 로고 이미지 교체
 - [x] UI/UX 폴리싱 (rounded-3xl 카드, 향상된 버튼 스타일, 소셜 프루프 배지)
 
+### Phase 6 (보안 및 품질 개선) ✅
+- [x] 글로벌 error.tsx 에러 바운더리 추가
+- [x] 인증 콜백 IP 기반 Rate Limiting (분당 10회)
+- [x] blind-profile-view `<img>` → `next/image` 전환 (성능 최적화)
+- [x] 카카오 콜백 디버그 console.log 19개 제거
+- [x] PRD/구현계획서 카카오톡 → 인앱 알림 문서 동기화
+
 ---
 
 **Document End**
