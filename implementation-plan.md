@@ -728,6 +728,22 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] 카카오 콜백 디버그 console.log 19개 제거
 - [x] PRD/구현계획서 카카오톡 → 인앱 알림 문서 동기화
 
+### Phase 7 (디자인 시스템 대규모 개선) ✅
+- [x] Pretendard 폰트 적용 (Noto Sans KR → CDN Pretendard)
+- [x] 10단계 gray 스케일 + 시맨틱 컬러 토큰 (WCAG AA 4.6:1)
+- [x] 타이포그래피 개선 (자간 -0.02em~-0.03em, lineHeight 162%)
+- [x] inset border 카드 시스템 (shadow-card-border, 당근 SEED 패턴)
+- [x] 그림자 시스템 세분화 (soft/medium/strong/card-border/card-border-hover)
+- [x] 애니메이션 확장 (slideDown, scaleIn, prefers-reduced-motion)
+- [x] 코어 컴포넌트 업그레이드 (Card 16px, Button soft variant, Input glow focus, Tag 채움 선택, Avatar ring+shadow)
+- [x] 레이아웃 개선 (Header/BottomNav shadow 기반, blur 16px, 활성 dot 인디케이터)
+- [x] 랜딩페이지 (85vh hero, 토스식 여백/타이포, 스크롤 애니메이션)
+- [x] 프로필 생성 (연픽식 리니어 프로그레스 바, 간결한 스텝 헤더)
+- [x] 대시보드 (2열 통계 grid, 썸네일 확대, 필터칩 snap-x)
+- [x] 채팅 (그래디언트 버블, 인풋/헤더 터치타겟 44px)
+- [x] 접근성 (prefers-reduced-motion, WCAG AA 대비, 44px 터치타겟)
+- [x] Vercel 프로덕션 배포 완료
+
 ---
 
 **Document End**
