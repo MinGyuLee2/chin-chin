@@ -54,7 +54,6 @@ export async function GET(request: NextRequest) {
 
   try {
     // 1. Exchange code for Kakao tokens
-    console.log("[kakao-callback] Step 1: Exchanging code for tokens...");
     const tokenResponse = await fetch("https://kauth.kakao.com/oauth/token", {
       method: "POST",
       headers: {
@@ -78,10 +77,8 @@ export async function GET(request: NextRequest) {
     }
 
     const tokenData: KakaoTokenResponse = await tokenResponse.json();
-    console.log("[kakao-callback] Step 1 done: Got tokens");
 
     // 2. Get user info from Kakao
-    console.log("[kakao-callback] Step 2: Fetching user info...");
     const userResponse = await fetch("https://kapi.kakao.com/v2/user/me", {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
@@ -97,7 +94,6 @@ export async function GET(request: NextRequest) {
     }
 
     const kakaoUser: KakaoUserResponse = await userResponse.json();
-    console.log("[kakao-callback] Step 2 done: kakao_id =", kakaoUser.id);
 
     const nickname =
       kakaoUser.kakao_account?.profile?.nickname ||
@@ -143,7 +139,6 @@ export async function GET(request: NextRequest) {
     );
 
     // 3. Create auth user if not exists
-    console.log("[kakao-callback] Step 3: Creating/finding auth user...");
     const { data: createData, error: createError } =
       await adminSupabase.auth.admin.createUser({
         email,
@@ -159,7 +154,6 @@ export async function GET(request: NextRequest) {
 
     if (createData?.user) {
       authUserId = createData.user.id;
-      console.log("[kakao-callback] Step 3 done: New auth user created:", authUserId);
     } else if (createError?.message?.includes("already been registered")) {
       // User already exists - find and update metadata
       const {
@@ -172,7 +166,6 @@ export async function GET(request: NextRequest) {
       }
 
       authUserId = existingAuthUser.id;
-      console.log("[kakao-callback] Step 3 done: Existing auth user found:", authUserId);
 
       await adminSupabase.auth.admin.updateUserById(authUserId, {
         user_metadata: {
@@ -186,7 +179,6 @@ export async function GET(request: NextRequest) {
     }
 
     // 4. Generate magic link and verify OTP to establish session
-    console.log("[kakao-callback] Step 4: Generating magic link...");
     const { data: linkData, error: linkError } =
       await adminSupabase.auth.admin.generateLink({
         type: "magiclink",
@@ -198,7 +190,7 @@ export async function GET(request: NextRequest) {
       throw linkError || new Error("Failed to generate magic link");
     }
 
-    console.log("[kakao-callback] Step 5: Verifying OTP...");
+    // 5. Verify OTP to establish session
     const { error: verifyError } = await supabase.auth.verifyOtp({
       token_hash: linkData.properties.hashed_token,
       type: "magiclink",
@@ -208,10 +200,8 @@ export async function GET(request: NextRequest) {
       console.error("[kakao-callback] verifyOtp error:", verifyError);
       throw verifyError;
     }
-    console.log("[kakao-callback] Step 5 done: Session established");
 
-    // 5. Upsert user in our users table (using auth user ID as users.id)
-    console.log("[kakao-callback] Step 6: Upserting user in DB...");
+    // 6. Upsert user in our users table (using auth user ID as users.id)
     const { data: existingUser } = await adminSupabase
       .from("users")
       .select("id")
@@ -222,7 +212,6 @@ export async function GET(request: NextRequest) {
       // Fix ID mismatch: users.id must equal Supabase auth user ID
       const needsIdFix = (existingUser as { id: string }).id !== authUserId;
       if (needsIdFix) {
-        console.log("[kakao-callback] Fixing user ID mismatch:", (existingUser as { id: string }).id, "->", authUserId);
         // Delete old record and re-insert with correct ID
         await adminSupabase
           .from("users")
@@ -258,15 +247,13 @@ export async function GET(request: NextRequest) {
         kakao_refresh_token: tokenData.refresh_token,
       } as never);
     }
-    console.log("[kakao-callback] Step 6 done: User upserted");
 
-    // 6. Build redirect response AFTER all async work is done, then set cookies
+    // 7. Build redirect response AFTER all async work is done, then set cookies
     const response = NextResponse.redirect(`${baseUrl}/`);
     for (const cookie of pendingCookies) {
       response.cookies.set(cookie.name, cookie.value, cookie.options);
     }
 
-    console.log("[kakao-callback] All done. Redirecting to home. Cookies set:", pendingCookies.length);
     return response;
   } catch (err) {
     console.error("[kakao-callback] Error:", err);

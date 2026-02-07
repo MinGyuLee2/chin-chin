@@ -128,8 +128,6 @@ export async function requestChat(profileId: string) {
       link_url: `/chat?pending=${chatRoom.id}`,
     } as never);
 
-    // TODO: Send Kakao notification
-
     return {
       success: true,
       chatRoomId: chatRoom.id,

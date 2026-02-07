@@ -1,8 +1,8 @@
 # 친친 (ChinChin) - Product Requirements Document
 
 > **Version**: 1.0.0  
-> **Last Updated**: 2026-02-02  
-> **Status**: Ready for Development  
+> **Last Updated**: 2026-02-07
+> **Status**: MVP Deployed  
 > **Target Platform**: Web (Mobile-first PWA)
 
 ---
@@ -59,7 +59,7 @@
 - 익명 채팅
 - 프로필 공개 시스템
 - 주선자 대시보드
-- 카카오톡 알림
+- 인앱 알림 (Supabase Realtime)
 
 **Out of Scope (Post-MVP)**:
 - 리워드 시스템
@@ -269,7 +269,6 @@ Acceptance Criteria:
     - MBTI
     - 좋아하는 음악 장르
     - 인스타그램 ID (공개용)
-    - 카카오톡 ID (공개용)
 
 Validation Rules:
   - 사진: 최대 10MB, jpg/png/webp
@@ -312,7 +311,7 @@ Acceptance Criteria:
   And 링크 유효기간은 24시간이다
   And 만료 시간이 카운트다운으로 표시된다
   And "인스타 스토리로 공유" 버튼이 표시된다
-  And 카카오톡으로 알림이 발송된다
+  And 인앱 알림이 발송된다
 
 Link Format:
   - Base URL: https://chinchin.app/m/
@@ -361,7 +360,7 @@ Acceptance Criteria:
   Then 카카오 로그인 화면으로 이동한다 (미로그인 시)
   And 로그인 후 대화 신청이 완료된다
   And "대화 요청을 보냈어요!" 메시지가 표시된다
-  And 소개 대상자에게 카카오톡 알림이 발송된다
+  And 소개 대상자에게 인앱 알림이 발송된다
 
 Business Rules:
   - 동일 프로필에 대한 중복 신청 불가
@@ -386,7 +385,7 @@ Acceptance Criteria:
 
   When "수락"을 클릭하면
   Then 채팅방이 활성화된다
-  And 양쪽에 카카오톡 알림이 발송된다
+  And 양쪽에 인앱 알림이 발송된다
   And 48시간 타이머가 시작된다
 
   When "거절"을 클릭하면
@@ -406,7 +405,7 @@ Acceptance Criteria:
   When 메시지를 입력하고 전송하면
   Then 메시지가 즉시 상대방에게 전달된다
   And 읽음 표시가 업데이트된다
-  And 새 메시지 발생 시 카카오톡 알림이 발송된다
+  And 새 메시지 발생 시 인앱 알림이 발송된다
 
   Chat Features:
     - 텍스트 메시지 (최대 500자)
@@ -442,9 +441,8 @@ Acceptance Criteria:
     - 선명한 원본 사진
     - 실명 (입력된 경우)
     - 인스타그램 ID
-    - 카카오톡 ID
   And 채팅방에 축하 메시지가 표시된다
-  And 인스타/카톡 연결 버튼이 표시된다
+  And 인스타 연결 버튼 + 취향 기반 대화 주제 제안이 표시된다
 
   When 상대방이 거절하면
   Then "아직 더 대화하고 싶어요" 메시지가 전송된다
@@ -496,7 +494,7 @@ Sorting:
 | 대화 신청 | P0 | MVP | 카카오 로그인 |
 | 익명 채팅 | P0 | MVP | Supabase Realtime |
 | 프로필 공개 | P0 | MVP | 익명 채팅 |
-| 카카오톡 알림 | P0 | MVP | Kakao Message API |
+| 인앱 알림 | P0 | MVP | Supabase Realtime |
 | 주선자 대시보드 | P0 | MVP | 프로필 링크 |
 | 링크 자동 만료 | P0 | MVP | Cron job |
 | 신고/차단 | P1 | Week 2 | 익명 채팅 |
@@ -664,10 +662,10 @@ Screen Sizes:
 ┌─────────────────────────────────────────────────────────────────┐
 │                     External Services                            │
 ├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
-│  │   Kakao     │  │   Kakao     │  │   Sentry    │             │
-│  │   OAuth     │  │   Message   │  │   (Error)   │             │
-│  └─────────────┘  └─────────────┘  └─────────────┘             │
+│  ┌─────────────┐  ┌─────────────┐                              │
+│  │   Kakao     │  │   Sentry    │                              │
+│  │   OAuth     │  │   (Error)   │                              │
+│  └─────────────┘  └─────────────┘                              │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -695,7 +693,7 @@ Screen Sizes:
 | CDN | Vercel Edge Network | - | Global |
 | **External APIs** ||||
 | Auth | Kakao OAuth 2.0 | - | Login |
-| Messaging | Kakao Message API | - | Notifications |
+| Notifications | Supabase Realtime | - | In-app notifications |
 | **DevOps** ||||
 | Error Tracking | Sentry | latest | Monitoring |
 | Analytics | Vercel Analytics | - | Performance |
@@ -838,7 +836,6 @@ CREATE TABLE profiles (
   mbti VARCHAR(4),
   music_genre VARCHAR(50),
   instagram_id VARCHAR(100),
-  kakao_open_chat_id VARCHAR(100),
   
   -- Link Settings
   expires_at TIMESTAMPTZ NOT NULL,
@@ -903,7 +900,7 @@ CREATE TABLE notifications (
   title VARCHAR(100),
   message TEXT,
   link_url TEXT,
-  sent_via VARCHAR(20) DEFAULT 'kakao_memo',
+  sent_via VARCHAR(20) DEFAULT 'in_app',
   sent_at TIMESTAMPTZ,
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -1249,7 +1246,7 @@ CREATE POLICY notifications_select ON notifications FOR SELECT USING (user_id = 
 
 ### Phase 4: Dashboard & Polish (Week 7-8)
 - [ ] 주선자 대시보드
-- [ ] 카카오톡 알림
+- [ ] 인앱 알림 (Supabase Realtime)
 - [ ] 테스트 및 버그 수정
 - [ ] 성능 최적화
 
@@ -1284,10 +1281,9 @@ IT/개발, 디자인, 마케팅/광고, 금융/회계, 의료/건강,
 
 ### C. Kakao API Reference
 - OAuth: https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api
-- Message: https://developers.kakao.com/docs/latest/ko/message/rest-api
 
 ---
 
 **Document End**
 
-*Last Updated: 2026-02-02*
+*Last Updated: 2026-02-07*

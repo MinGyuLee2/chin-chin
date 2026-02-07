@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, MessageCircle, Share2 } from "lucide-react";
@@ -113,10 +114,13 @@ export function BlindProfileView({ profile }: BlindProfileViewProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="relative mb-6 aspect-square overflow-hidden rounded-3xl shadow-strong"
         >
-          <img
+          <Image
             src={profile.photo_url}
             alt="Profile"
-            className="h-full w-full object-cover blur-xl scale-110"
+            fill
+            sizes="(max-width: 512px) 100vw, 512px"
+            className="object-cover blur-xl scale-110"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
