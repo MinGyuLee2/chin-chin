@@ -88,6 +88,12 @@ export const MAX_DAILY_PROFILE_CREATIONS = 10;
 // Maximum daily chat requests
 export const MAX_DAILY_CHAT_REQUESTS = 10;
 
+// Invitation expiry time (7 days)
+export const INVITATION_EXPIRY_DAYS = 7;
+
+// Maximum daily invitations
+export const MAX_DAILY_INVITATIONS = 10;
+
 // Report reasons (신고 사유)
 export const REPORT_REASONS = [
   { value: "harassment", label: "불쾌한 언행" },

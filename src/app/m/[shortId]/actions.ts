@@ -41,6 +41,11 @@ export async function requestChat(profileId: string) {
       return { error: "본인이 만든 프로필에는 신청할 수 없어요" };
     }
 
+    // Check if user is the matchmaker
+    if (profile.matchmaker_id === user.id) {
+      return { error: "주선자는 본인이 소개한 프로필에 대화를 신청할 수 없어요" };
+    }
+
     // Check if already requested
     const { data: existingRoomData } = await supabase
       .from("chat_rooms")

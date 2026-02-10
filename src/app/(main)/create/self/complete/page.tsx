@@ -21,10 +21,10 @@ import { createClient } from "@/lib/supabase/client";
 import { getProfileUrl } from "@/lib/utils";
 import type { Profile } from "@/types/database";
 
-export default function CreateCompletePage() {
+export default function SelfCompletePageWrapper() {
   return (
     <Suspense fallback={<LoadingState />}>
-      <CreateCompleteContent />
+      <SelfCompleteContent />
     </Suspense>
   );
 }
@@ -40,7 +40,7 @@ function LoadingState() {
   );
 }
 
-function CreateCompleteContent() {
+function SelfCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -103,14 +103,13 @@ function CreateCompleteContent() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "친친 - 친구 소개",
+          title: "친친 - 소개팅 프로필",
           text: `${profile?.bio} 💕`,
           url: profileUrl,
         });
       } catch (error) {
-        // User cancelled or share failed
         if ((error as Error).name !== "AbortError") {
-          handleCopy(); // Fallback to copy
+          handleCopy();
         }
       }
     } else {
@@ -119,7 +118,6 @@ function CreateCompleteContent() {
   };
 
   const handleInstagramShare = async () => {
-    // Copy link first
     try {
       await navigator.clipboard.writeText(profileUrl);
     } catch {
@@ -132,23 +130,13 @@ function CreateCompleteContent() {
       variant: "success",
     });
 
-    // Try opening Instagram story camera
-    // On mobile, this opens the Instagram app's story camera
-    // The user needs to manually add a link sticker and paste
     setTimeout(() => {
       window.open("instagram://story-camera", "_blank");
     }, 500);
   };
 
   if (isLoading) {
-    return (
-      <>
-        <Header />
-        <main className="flex min-h-screen items-center justify-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </main>
-      </>
-    );
+    return <LoadingState />;
   }
 
   if (!profile) {
@@ -179,9 +167,9 @@ function CreateCompleteContent() {
             transition={{ delay: 0.2 }}
             className="mb-8 text-center"
           >
-            <h1 className="mb-2 text-2xl font-bold">링크가 생성되었어요!</h1>
+            <h1 className="mb-2 text-2xl font-bold">프로필이 생성되었어요!</h1>
             <p className="text-muted-foreground">
-              이제 인스타 스토리에 공유해보세요
+              지인에게 이 링크를 공유해보세요. 24시간 후 만료돼요!
             </p>
           </motion.div>
 
@@ -283,7 +271,7 @@ function CreateCompleteContent() {
                 onClick={() => router.push("/create")}
               >
                 <ArrowRight className="mr-2 h-4 w-4" />
-                새 링크 만들기
+                새 프로필 만들기
               </Button>
             </div>
           </motion.div>
@@ -297,7 +285,7 @@ function CreateCompleteContent() {
           >
             <h3 className="mb-2 font-bold">💡 공유 팁</h3>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              <li>• 스토리에 &ldquo;이 친구 어때요?&rdquo; 같은 문구를 추가해보세요</li>
+              <li>• 지인에게 링크를 보내서 인스타 스토리에 올려달라고 해보세요</li>
               <li>• 링크 스티커를 사용하면 터치 한 번으로 접속할 수 있어요</li>
               <li>• 24시간 후 링크가 만료되니 서둘러 공유하세요!</li>
             </ul>

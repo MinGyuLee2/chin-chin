@@ -46,6 +46,11 @@ export function BottomNav() {
     return null;
   }
 
+  // Hide on invite profile pages
+  if (pathname.startsWith("/invite/")) {
+    return null;
+  }
+
   const navItems: NavItem[] = [
     { href: "/", icon: Home, label: "홈" },
     { href: "/create", icon: PlusCircle, label: "소개하기", requiresAuth: true },

@@ -1,17 +1,16 @@
 "use server";
 
 import { nanoid } from "nanoid";
-import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
 import { profileSchema, type ProfileFormData } from "@/lib/validations/profile";
-import { PROFILE_EXPIRY_HOURS } from "@/lib/constants";
+import { PROFILE_EXPIRY_HOURS, MAX_DAILY_PROFILE_CREATIONS } from "@/lib/constants";
+import { processAndUploadProfileImage } from "@/lib/image-processing";
 import type { InsertTables } from "@/types/database";
 
-export async function createProfile(data: ProfileFormData) {
+export async function createSelfProfile(data: ProfileFormData) {
   try {
     const supabase = await createClient();
 
-    // Get current user
     const {
       data: { user },
       error: authError,
@@ -39,15 +38,14 @@ export async function createProfile(data: ProfileFormData) {
       .eq("creator_id", user.id)
       .gte("created_at", today.toISOString());
 
-    if (count !== null && count >= 10) {
-      return { error: "오늘은 더 이상 링크를 만들 수 없어요. 내일 다시 시도해주세요!" };
+    if (count !== null && count >= MAX_DAILY_PROFILE_CREATIONS) {
+      return { error: "오늘은 더 이상 프로필을 만들 수 없어요. 내일 다시 시도해주세요!" };
     }
 
     // Generate short ID
     let shortId = nanoid(8);
     let attempts = 0;
 
-    // Ensure uniqueness
     while (attempts < 5) {
       const { data: existing } = await supabase
         .from("profiles")
@@ -56,7 +54,6 @@ export async function createProfile(data: ProfileFormData) {
         .single();
 
       if (!existing) break;
-
       shortId = nanoid(8);
       attempts++;
     }
@@ -65,58 +62,26 @@ export async function createProfile(data: ProfileFormData) {
       return { error: "링크 생성에 실패했어요. 다시 시도해주세요." };
     }
 
-    // Upload images
-    const photoBuffer = await validData.photo.arrayBuffer();
-    const photoExtension = validData.photo.type.split("/")[1];
-    const photoPath = `${user.id}/${shortId}/original.${photoExtension}`;
-    const blurredPath = `${user.id}/${shortId}/blurred.jpeg`;
+    // Process and upload image
+    const { photoUrl, originalPhotoUrl } = await processAndUploadProfileImage(
+      supabase,
+      validData.photo,
+      user.id,
+      shortId
+    );
 
-    // Upload original photo
-    const { error: uploadError } = await supabase.storage
-      .from("profiles")
-      .upload(photoPath, photoBuffer, {
-        contentType: validData.photo.type,
-        upsert: true,
-      });
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      return { error: "사진 업로드에 실패했어요" };
-    }
-
-    // Generate blurred version using Sharp
-    const blurredBuffer = await sharp(Buffer.from(photoBuffer))
-      .resize(400)
-      .blur(30)
-      .jpeg({ quality: 60 })
-      .toBuffer();
-
-    await supabase.storage
-      .from("profiles")
-      .upload(blurredPath, blurredBuffer, {
-        contentType: "image/jpeg",
-        upsert: true,
-      });
-
-    // Get public URLs
-    const { data: originalUrl } = supabase.storage
-      .from("profiles")
-      .getPublicUrl(photoPath);
-
-    const { data: blurredUrl } = supabase.storage
-      .from("profiles")
-      .getPublicUrl(blurredPath);
-
-    // Calculate expiry time
+    // Calculate expiry time (즉시 활성화)
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + PROFILE_EXPIRY_HOURS);
 
-    // Create profile
+    // Create profile (셀프: matchmaker_id = null)
     const profileData: InsertTables<"profiles"> = {
       short_id: shortId,
       creator_id: user.id,
-      photo_url: blurredUrl.publicUrl,
-      original_photo_url: originalUrl.publicUrl,
+      matchmaker_id: null,
+      invitation_id: null,
+      photo_url: photoUrl,
+      original_photo_url: originalPhotoUrl,
       age: validData.age,
       gender: validData.gender,
       occupation_category: validData.occupationCategory,
@@ -127,6 +92,7 @@ export async function createProfile(data: ProfileFormData) {
       instagram_id: validData.instagramId || null,
       kakao_open_chat_id: null,
       expires_at: expiresAt.toISOString(),
+      is_active: true,
     };
 
     const { data: profile, error: insertError } = await supabase
@@ -147,7 +113,10 @@ export async function createProfile(data: ProfileFormData) {
       shortId: result.short_id,
     };
   } catch (error) {
-    console.error("Create profile error:", error);
+    console.error("Create self profile error:", error);
+    if (error instanceof Error && error.message.includes("사진")) {
+      return { error: error.message };
+    }
     return { error: "알 수 없는 오류가 발생했어요" };
   }
 }

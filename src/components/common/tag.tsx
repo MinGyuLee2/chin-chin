@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface TagProps {
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "muted";
+  variant?: "primary" | "secondary" | "muted" | "success" | "warning";
   size?: "sm" | "md";
   className?: string;
   onClick?: () => void;
@@ -13,6 +13,8 @@ const variantClasses = {
   primary: "bg-primary-light text-primary",
   secondary: "bg-secondary/10 text-secondary",
   muted: "bg-muted text-muted-foreground",
+  success: "bg-green-100 text-green-700",
+  warning: "bg-amber-100 text-amber-700",
 };
 
 const sizeClasses = {

@@ -47,6 +47,8 @@ export type Database = {
           short_id: string;
           creator_id: string;
           target_id: string | null;
+          matchmaker_id: string | null;
+          invitation_id: string | null;
           photo_url: string;
           original_photo_url: string | null;
           name: string | null;
@@ -71,6 +73,8 @@ export type Database = {
           short_id: string;
           creator_id: string;
           target_id?: string | null;
+          matchmaker_id?: string | null;
+          invitation_id?: string | null;
           photo_url: string;
           original_photo_url?: string | null;
           name?: string | null;
@@ -95,6 +99,8 @@ export type Database = {
           short_id?: string;
           creator_id?: string;
           target_id?: string | null;
+          matchmaker_id?: string | null;
+          invitation_id?: string | null;
           photo_url?: string;
           original_photo_url?: string | null;
           name?: string | null;
@@ -272,6 +278,41 @@ export type Database = {
           created_at?: string;
         };
       };
+      invitations: {
+        Row: {
+          id: string;
+          invite_code: string;
+          matchmaker_id: string;
+          target_id: string | null;
+          profile_id: string | null;
+          status: "pending" | "completed" | "shared" | "expired";
+          matchmaker_message: string | null;
+          created_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          id?: string;
+          invite_code: string;
+          matchmaker_id: string;
+          target_id?: string | null;
+          profile_id?: string | null;
+          status?: "pending" | "completed" | "shared" | "expired";
+          matchmaker_message?: string | null;
+          created_at?: string;
+          expires_at: string;
+        };
+        Update: {
+          id?: string;
+          invite_code?: string;
+          matchmaker_id?: string;
+          target_id?: string | null;
+          profile_id?: string | null;
+          status?: "pending" | "completed" | "shared" | "expired";
+          matchmaker_message?: string | null;
+          created_at?: string;
+          expires_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -308,3 +349,4 @@ export type Message = Tables<"messages">;
 export type Notification = Tables<"notifications">;
 export type Report = Tables<"reports">;
 export type Block = Tables<"blocks">;
+export type Invitation = Tables<"invitations">;

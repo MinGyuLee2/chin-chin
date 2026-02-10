@@ -404,7 +404,7 @@ export default function HomePage() {
               {isAuthenticated ? (
                 <Button size="lg" fullWidth asChild>
                   <Link href="/create">
-                    친구 소개하기
+                    시작하기
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
@@ -765,7 +765,7 @@ export default function HomePage() {
                   asChild
                 >
                   <Link href="/create">
-                    친구 소개하기
+                    시작하기
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
