@@ -779,6 +779,27 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] SQL migration: `006_increment_functions.sql` 생성
 - [x] Vercel 프로덕션 배포 완료
 
+### Phase 11 (소개 플로우 전면 개편 — 초대 기반 + 셀프 프로필) ✅
+- [x] `invitations` 테이블 + RLS 정책 생성 (`007_invitations.sql`)
+- [x] `profiles` 테이블에 `matchmaker_id`, `invitation_id` 컬럼 추가
+- [x] `database.ts` 타입 업데이트 (`Invitation` 타입 + Profile 컬럼)
+- [x] `constants.ts`에 `INVITATION_EXPIRY_DAYS`, `MAX_DAILY_INVITATIONS` 추가
+- [x] 이미지 처리 공유 유틸 추출 (`src/lib/image-processing.ts`)
+- [x] Flow A (초대): `/create/invite` → 초대 생성 → `/create/invite/complete`
+- [x] Flow A (초대): `/invite/[inviteCode]` → 친구 프로필 작성 (public, 로그인 후 3스텝 폼)
+- [x] Flow A (초대): 프로필 작성 완료 시 invitation status → completed, 주선자 알림
+- [x] Flow A (초대): 대시보드에서 activateAndShare → profile is_active=true, 24h 타이머 시작
+- [x] Flow B (셀프): `/create/self` → 3스텝 폼 → `/create/self/complete`
+- [x] Flow B (셀프): 즉시 활성화 (is_active=true, 24h 타이머)
+- [x] `/create` → 선택 허브 (초대 vs 셀프) 전환
+- [x] `/dashboard` → 두 탭 구조 (내가 초대한 / 내 프로필)
+- [x] `requestChat`에 matchmaker 대화신청 차단 로직 추가
+- [x] BottomNav `/invite/` 경로 숨김
+- [x] Tag 컴포넌트 `success`/`warning` variant 추가
+- [x] 랜딩 CTA 문구 "시작하기"로 변경
+- [x] 기존 `create/actions.ts`, `create/complete/page.tsx` 삭제
+- [x] Vercel 프로덕션 배포 완료
+
 ---
 
 **Document End**
