@@ -767,6 +767,18 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] Framer Motion opacity 충돌 해결: motion.div 내부에 별도 div wrapper 추가
 - [x] Vercel 프로덕션 배포 완료
 
+### Phase 10 (기술 문제점 일괄 수정) ✅
+- [x] P0: `listUsers()` 전체 조회 제거 → `generateLink().user.id`로 교체 (보안+성능)
+- [x] P0: view_count/chat_request_count race condition → Supabase RPC atomic increment 함수로 교체
+- [x] P0: view_count 미실행 버그 수정 (`void supabase.rpc()`)
+- [x] P1: useAuth N+1 API 호출 → AuthContext 단일 fetch로 통합
+- [x] P1: rate limiter serverless 한계점 문서화 (향후 Upstash Redis TODO)
+- [x] P2: notification insert 에러 로깅 추가 (5개소)
+- [x] P2: count 비교 로직 수정 (`count !== null && count >=`)
+- [x] P2: login 페이지 dead code (sessionStorage) 제거
+- [x] SQL migration: `006_increment_functions.sql` 생성
+- [x] Vercel 프로덕션 배포 완료
+
 ---
 
 **Document End**
