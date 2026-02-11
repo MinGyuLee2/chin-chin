@@ -833,6 +833,13 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] Vercel 프로덕션 배포 완료
 - [ ] (수동) Supabase에서 `009_multi_photos.sql` 마이그레이션 실행 필요
 
+### Phase 14-1 (다중 사진 업로드 버그 수정) ✅
+- [x] 다중 사진(2장+) 업로드 시 프로필 생성 실패 버그 수정
+- [x] Server Action 인자를 `ProfileFormData` → `FormData`로 변경 (File 직렬화 문제 해결)
+- [x] `serverProfileDataSchema` 추가 (서버 전용, File 검증 제외)
+- [x] `bodySizeLimit` 10mb → 50mb 증가
+- [x] Vercel 프로덕션 배포 완료
+
 ---
 
 **Document End**
