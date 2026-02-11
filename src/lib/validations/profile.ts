@@ -91,3 +91,7 @@ export type PhotoFormData = z.infer<typeof photoSchema>;
 export type BasicInfoFormData = z.infer<typeof basicInfoSchema>;
 export type PreferencesFormData = z.infer<typeof preferencesSchema>;
 export type ProfileFormData = z.infer<typeof profileSchema>;
+
+// Server-side validation (File은 FormData에서 직접 검증)
+export const serverProfileDataSchema = basicInfoSchema.merge(preferencesSchema);
+export type ServerProfileData = z.infer<typeof serverProfileDataSchema>;

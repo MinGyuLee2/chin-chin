@@ -2,13 +2,13 @@
 
 import { nanoid } from "nanoid";
 import { createClient } from "@/lib/supabase/server";
-import { profileSchema, type ProfileFormData } from "@/lib/validations/profile";
+import { serverProfileDataSchema, MAX_PHOTOS } from "@/lib/validations/profile";
 import { processAndUploadProfileImages } from "@/lib/image-processing";
 import type { InsertTables, Invitation } from "@/types/database";
 
 export async function submitInviteProfile(
   inviteCode: string,
-  data: ProfileFormData
+  formData: FormData
 ) {
   try {
     const supabase = await createClient();
@@ -49,8 +49,33 @@ export async function submitInviteProfile(
       return { error: "본인이 만든 초대에는 프로필을 작성할 수 없어요" };
     }
 
-    // Validate input
-    const validationResult = profileSchema.safeParse(data);
+    // Extract photos from FormData
+    const photoCount = parseInt(formData.get("photoCount") as string) || 0;
+    if (photoCount < 1 || photoCount > MAX_PHOTOS) {
+      return { error: `사진을 1~${MAX_PHOTOS}장 업로드해주세요` };
+    }
+
+    const photos: { file: File; blurEnabled: boolean }[] = [];
+    for (let i = 0; i < photoCount; i++) {
+      const file = formData.get(`photo_${i}`);
+      if (!file || !(file instanceof File)) {
+        return { error: "사진 파일을 확인해주세요" };
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        return { error: "10MB 이하의 사진만 업로드 가능해요" };
+      }
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        return { error: "JPG, PNG, WebP 형식만 가능해요" };
+      }
+      photos.push({
+        file,
+        blurEnabled: formData.get(`blur_${i}`) === "true",
+      });
+    }
+
+    // Validate other fields
+    const rawData = JSON.parse(formData.get("data") as string);
+    const validationResult = serverProfileDataSchema.safeParse(rawData);
     if (!validationResult.success) {
       return { error: validationResult.error.errors[0].message };
     }
@@ -78,9 +103,9 @@ export async function submitInviteProfile(
     }
 
     // Process and upload images (다중 사진)
-    const { photos, photoUrl, originalPhotoUrl } = await processAndUploadProfileImages(
+    const { photos: processedPhotos, photoUrl, originalPhotoUrl } = await processAndUploadProfileImages(
       supabase,
-      validData.photos,
+      photos,
       user.id,
       shortId
     );
@@ -93,7 +118,7 @@ export async function submitInviteProfile(
       invitation_id: invitation.id,
       photo_url: photoUrl,
       original_photo_url: originalPhotoUrl,
-      photos,
+      photos: processedPhotos,
       age: validData.age,
       gender: validData.gender,
       occupation_category: validData.occupationCategory,

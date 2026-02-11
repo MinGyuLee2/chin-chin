@@ -60,7 +60,17 @@ export function InviteProfileForm({
     setIsSubmitting(true);
 
     try {
-      const result = await submitInviteProfile(inviteCode, completeData);
+      // Build FormData for reliable multi-file upload
+      const fd = new FormData();
+      completeData.photos.forEach((p, i) => {
+        fd.append(`photo_${i}`, p.file);
+        fd.append(`blur_${i}`, String(p.blurEnabled));
+      });
+      fd.append("photoCount", String(completeData.photos.length));
+      const { photos: _photos, ...profileData } = completeData;
+      fd.append("data", JSON.stringify(profileData));
+
+      const result = await submitInviteProfile(inviteCode, fd);
 
       if (result.error) {
         toast({
