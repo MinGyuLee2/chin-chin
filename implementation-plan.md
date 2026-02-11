@@ -800,6 +800,12 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] 기존 `create/actions.ts`, `create/complete/page.tsx` 삭제
 - [x] Vercel 프로덕션 배포 완료
 
+### Phase 12 (버그 수정 — 차단관리, 헤더, 초대자 차단) ✅
+- [x] `getBlockedUsers` RLS 버그 수정 — `createAdminClient`로 users join 우회
+- [x] 헤더 프로필 사진 버튼 제거, 알림 벨만 남김
+- [x] 초대 페이지에서 초대자 본인 프로필 작성 클라이언트 차단
+- [x] Vercel 프로덕션 배포 완료
+
 ---
 
 **Document End**
