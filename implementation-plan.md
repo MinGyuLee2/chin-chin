@@ -806,6 +806,18 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] 초대 페이지에서 초대자 본인 프로필 작성 클라이언트 차단
 - [x] Vercel 프로덕션 배포 완료
 
+### Phase 13 (보안 감사 및 취약점 수정) ✅
+- [x] OAuth CSRF 보호: state 파라미터 생성/검증 추가 (login, callback)
+- [x] client_secret 빈 문자열 폴백 제거 (환경변수 미설정 시 즉시 에러)
+- [x] Open Redirect 방지: middleware redirect 파라미터 검증
+- [x] 보안 헤더 추가 (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, X-XSS-Protection)
+- [x] HTTP 이미지 설정 제거 (Kakao CDN HTTPS만 허용)
+- [x] 초대 RLS `USING(TRUE)` 전체 공개 정책 제거
+- [x] 알림 INSERT RLS 강화 (타인에게만 생성 가능)
+- [x] `increment_chat_request_count` 함수 권한 검증 추가
+- [x] Vercel 프로덕션 배포 완료
+- [ ] (수동) Supabase에서 `008_security_fixes.sql` 마이그레이션 실행 필요
+
 ---
 
 **Document End**
