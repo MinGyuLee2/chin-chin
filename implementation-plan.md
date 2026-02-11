@@ -818,6 +818,21 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] Vercel 프로덕션 배포 완료
 - [ ] (수동) Supabase에서 `008_security_fixes.sql` 마이그레이션 실행 필요
 
+### Phase 14 (차단관리 수정 + 이용약관/개인정보 + 다중 사진/블러 선택) ✅
+- [x] 차단 관리 오류 수정: Kakao CDN 와일드카드(`**.kakaocdn.net`) + null safety
+- [x] `/terms` 서비스 이용약관 페이지 생성 (11개 조항)
+- [x] `/privacy` 개인정보 처리방침 페이지 생성 (10개 섹션)
+- [x] DB: `profiles.photos JSONB` 컬럼 추가 마이그레이션 (`009_multi_photos.sql`)
+- [x] 타입/유효성검사: `ProfilePhoto` 타입 + 다중 사진 Zod 스키마 (최대 5장, 블러 선택)
+- [x] 이미지 처리: `processAndUploadProfileImages()` — 블러 on/off 조건부 처리
+- [x] 사진 업로드 UI: 3열 그리드 + 사진별 블러 토글 + 드래그 앤 드롭
+- [x] 서버 액션: `create/self/actions.ts`, `invite/actions.ts` 다중 사진 대응
+- [x] 사진 캐러셀: `PhotoCarousel` 컴포넌트 (scroll-snap 기반)
+- [x] 프로필 표시: `blind-profile-view`, `chat-request-detail` 캐러셀 적용
+- [x] 프로필 공개: `acceptProfileReveal`에서 `photos` 데이터 반환
+- [x] Vercel 프로덕션 배포 완료
+- [ ] (수동) Supabase에서 `009_multi_photos.sql` 마이그레이션 실행 필요
+
 ---
 
 **Document End**

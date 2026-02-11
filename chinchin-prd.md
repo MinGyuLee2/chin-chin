@@ -1,7 +1,7 @@
 # 친친 (ChinChin) - Product Requirements Document
 
 > **Version**: 1.0.0  
-> **Last Updated**: 2026-02-07
+> **Last Updated**: 2026-02-11
 > **Status**: MVP Deployed  
 > **Target Platform**: Web (Mobile-first PWA)
 
@@ -258,7 +258,7 @@ Acceptance Criteria:
   Then 프로필 입력 폼이 표시된다
 
   Required Fields:
-    - 사진 (1장, 자동 블러 처리)
+    - 사진 (최대 5장, 사진별 블러 선택 가능)
     - 나이 (18-99)
     - 성별 (남/여)
     - 직업 카테고리 (드롭다운)
@@ -271,30 +271,31 @@ Acceptance Criteria:
     - 인스타그램 ID (공개용)
 
 Validation Rules:
-  - 사진: 최대 10MB, jpg/png/webp
+  - 사진: 최소 1장~최대 5장, 장당 최대 10MB, jpg/png/webp
   - 나이: 숫자만, 18-99 범위
   - 한 줄 소개: 10자 이상 50자 이하
   - 키워드: 정확히 3개 선택
 ```
 
-#### US-2.2: 이미지 블러 처리
+#### US-2.2: 이미지 블러 처리 (선택적)
 
 ```gherkin
-As a 주선자
-I want to 업로드한 사진이 자동으로 블러 처리되길 원한다
-So that 프라이버시를 보호할 수 있다
+As a 프로필 작성자
+I want to 사진별로 블러 적용 여부를 선택하고 싶다
+So that 원하는 사진만 블라인드 처리하고 나머지는 즉시 공개할 수 있다
 
 Acceptance Criteria:
-  Given 주선자가 사진을 업로드했을 때
-  When 업로드가 완료되면
-  Then 블러 처리된 미리보기가 즉시 표시된다
-  And 원본과 블러 이미지 모두 저장된다
+  Given 사용자가 사진을 업로드했을 때
+  When 각 사진 하단의 블러 토글을 ON/OFF하면
+  Then 블러 ON: 서버에서 blur 처리 후 프로필 공개 전까지 블러 표시
+  And 블러 OFF: 원본 이미지가 즉시 모두에게 공개됨
   And 블러 강도는 얼굴이 식별 불가능한 수준이다
 
 Technical Notes:
-  - 클라이언트: Canvas API로 실시간 미리보기
-  - 서버: Sharp.js로 저장 시 블러 처리
+  - 서버: Sharp.js로 블러 처리 (조건부, blurEnabled=true일 때만)
   - 블러 반경: 30px gaussian blur
+  - DB: profiles.photos JSONB [{url, originalUrl, blurEnabled}]
+  - 기존 photo_url/original_photo_url은 첫 번째 사진과 동기화 (하위 호환)
 ```
 
 #### US-2.3: 링크 생성
@@ -827,6 +828,7 @@ CREATE TABLE profiles (
   -- Profile Information
   photo_url TEXT NOT NULL,
   original_photo_url TEXT,
+  photos JSONB DEFAULT '[]',  -- [{url, originalUrl, blurEnabled}]
   name VARCHAR(50),
   age SMALLINT NOT NULL CHECK (age >= 18 AND age <= 99),
   gender VARCHAR(10) NOT NULL CHECK (gender IN ('male', 'female')),
