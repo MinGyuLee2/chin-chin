@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const error = searchParams.get("error");
+  const state = searchParams.get("state");
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -50,6 +51,13 @@ export async function GET(request: NextRequest) {
 
   if (!code) {
     return NextResponse.redirect(`${baseUrl}/login?error=no_code`);
+  }
+
+  // CSRF 보호: state 파라미터 검증
+  const storedState = request.cookies.get("kakao_oauth_state")?.value;
+  if (!state || !storedState || state !== storedState) {
+    console.error("[kakao-callback] State mismatch — possible CSRF attack");
+    return NextResponse.redirect(`${baseUrl}/login?error=invalid_state`);
   }
 
   // Collect cookies to set on the final response
@@ -65,7 +73,7 @@ export async function GET(request: NextRequest) {
       body: new URLSearchParams({
         grant_type: "authorization_code",
         client_id: process.env.KAKAO_CLIENT_ID!,
-        client_secret: process.env.KAKAO_CLIENT_SECRET || "",
+        client_secret: process.env.KAKAO_CLIENT_SECRET!,
         redirect_uri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!,
         code,
       }),
@@ -247,6 +255,8 @@ export async function GET(request: NextRequest) {
     for (const cookie of pendingCookies) {
       response.cookies.set(cookie.name, cookie.value, cookie.options);
     }
+    // state 쿠키 삭제
+    response.cookies.set("kakao_oauth_state", "", { maxAge: 0, path: "/" });
 
     return response;
   } catch (err) {

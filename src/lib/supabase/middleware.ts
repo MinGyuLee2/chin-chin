@@ -57,7 +57,12 @@ export async function updateSession(request: NextRequest) {
   if (request.nextUrl.pathname === "/login" && user) {
     const url = request.nextUrl.clone();
     const redirect = url.searchParams.get("redirect") || "/";
-    url.pathname = redirect;
+    // Open Redirect 방지: 상대 경로만 허용
+    const safeRedirect =
+      redirect.startsWith("/") && !redirect.startsWith("//") && !redirect.includes(":")
+        ? redirect
+        : "/";
+    url.pathname = safeRedirect;
     url.searchParams.delete("redirect");
     return NextResponse.redirect(url);
   }

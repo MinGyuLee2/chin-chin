@@ -21,7 +21,11 @@ function LoginContent() {
     const kakaoClientId = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
 
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoClientId}&redirect_uri=${encodeURIComponent(redirectUri!)}&response_type=code&scope=profile_nickname,profile_image`;
+    // CSRF 보호: 랜덤 state 생성 후 쿠키에 저장
+    const state = crypto.randomUUID();
+    document.cookie = `kakao_oauth_state=${state}; path=/; max-age=600; SameSite=Lax`;
+
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoClientId}&redirect_uri=${encodeURIComponent(redirectUri!)}&response_type=code&scope=profile_nickname,profile_image&state=${state}`;
 
     window.location.href = kakaoAuthUrl;
   };
