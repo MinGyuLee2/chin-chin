@@ -113,7 +113,7 @@ export function ChatRequestDetail({ room }: ChatRequestDetailProps) {
         >
           <PhotoCarousel
             photos={
-              profile.photos && profile.photos.length > 0
+              Array.isArray(profile.photos) && profile.photos.length > 0
                 ? profile.photos
                 : [{ url: profile.photo_url, originalUrl: profile.original_photo_url || profile.photo_url, blurEnabled: true } as ProfilePhoto]
             }
