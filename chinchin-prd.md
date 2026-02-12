@@ -858,25 +858,27 @@ CREATE INDEX idx_profiles_active ON profiles(is_active, expires_at);
 -- ================================================
 CREATE TABLE chat_rooms (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  profile_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE, -- nullable for admin chats
   requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   target_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  
-  status VARCHAR(20) DEFAULT 'pending' 
+  room_type VARCHAR(20) DEFAULT 'normal' CHECK (room_type IN ('normal', 'admin')),
+
+  status VARCHAR(20) DEFAULT 'pending'
     CHECK (status IN ('pending', 'active', 'rejected', 'expired', 'completed')),
   profile_revealed BOOLEAN DEFAULT FALSE,
   profile_revealed_at TIMESTAMPTZ,
-  
+
   last_message_at TIMESTAMPTZ,
   expires_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   CONSTRAINT chat_rooms_different_users CHECK (requester_id != target_id)
 );
 
 CREATE INDEX idx_chat_rooms_requester ON chat_rooms(requester_id);
 CREATE INDEX idx_chat_rooms_target ON chat_rooms(target_id);
-CREATE UNIQUE INDEX idx_chat_rooms_unique ON chat_rooms(profile_id, requester_id);
+CREATE UNIQUE INDEX idx_chat_rooms_unique_normal ON chat_rooms(profile_id, requester_id) WHERE room_type = 'normal' AND profile_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_chat_rooms_unique_admin ON chat_rooms(requester_id, target_id) WHERE room_type = 'admin';
 
 -- ================================================
 -- 4. Messages Table (메시지)

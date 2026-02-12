@@ -850,6 +850,21 @@ test('주선자가 프로필을 생성하고 공유한다', async ({ page }) => 
 - [x] `next.config.ts`: 불필요한 `bodySizeLimit: 50mb` 설정 제거
 - [x] Vercel 프로덕션 배포 완료
 
+### Phase 15 (베타 피드백 관리자 채팅) ✅
+- [x] DB: `chat_rooms`에 `room_type` 컬럼 추가, `profile_id` nullable 변경 (`010_admin_chat.sql`)
+- [x] TypeScript 타입 업데이트 (`database.ts`: `room_type`, nullable `profile_id`)
+- [x] 환경변수 `NEXT_PUBLIC_ADMIN_USER_ID` + `ADMIN_USER_ID` 상수 추가
+- [x] `isAdminChat()`, `isAdminUser()` 헬퍼 유틸리티 (`src/lib/admin-chat.ts`)
+- [x] `getOrCreateAdminChatRoom()` 서버 액션 (lazy 생성, 중복 방지)
+- [x] `sendMessage` 수정: 관리자 채팅방은 만료 체크/연락처 필터링 스킵
+- [x] `AdminChatHeader` 컴포넌트 (프로필 정보/타이머/메뉴 없는 간결한 헤더)
+- [x] 채팅방 페이지 조건부 렌더링 (프로필 공개/만료 UI 숨김, 입력창 항상 표시)
+- [x] 채팅 목록: 관리자 채팅방 상단 고정 + 전용 카드 UI (Beta 태그)
+- [x] 대시보드: "베타 피드백" 버튼 추가 (관리자 채팅방 생성/이동)
+- [x] Vercel 프로덕션 배포 완료
+- [ ] (수동) Supabase에서 `010_admin_chat.sql` 마이그레이션 실행 필요
+- [ ] (수동) `.env.local` + Vercel에 `NEXT_PUBLIC_ADMIN_USER_ID` 환경변수 설정 필요
+
 ---
 
 **Document End**
