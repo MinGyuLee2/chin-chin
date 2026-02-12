@@ -14,11 +14,10 @@ export function BetaFeedbackFab() {
     const { toast } = useToast();
     const [isOpening, setIsOpening] = useState(false);
 
-    // Hide on chat detail pages, login, and landing
+    // Hide on chat detail pages, login, profile views, invite pages
     if (
         pathname.startsWith("/chat/") ||
         pathname === "/login" ||
-        pathname === "/" ||
         pathname.startsWith("/m/") ||
         pathname.startsWith("/invite/") ||
         !user
@@ -50,13 +49,16 @@ export function BetaFeedbackFab() {
         <button
             onClick={handleClick}
             disabled={isOpening}
-            className="fixed bottom-24 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-pink-500 text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-60"
+            className="fixed bottom-24 right-4 z-50 flex items-center gap-2 rounded-full bg-gradient-to-br from-primary to-pink-500 py-3 pl-4 pr-5 text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-60"
             aria-label="베타 피드백"
         >
             {isOpening ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : (
-                <MessageSquareHeart className="h-6 w-6" />
+                <>
+                    <MessageSquareHeart className="h-5 w-5" />
+                    <span className="text-sm font-semibold">피드백</span>
+                </>
             )}
         </button>
     );
