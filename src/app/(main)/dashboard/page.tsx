@@ -289,9 +289,15 @@ export default function DashboardPage() {
                 <div className="py-16 text-center">
                   <div className="mb-6 text-6xl">💌</div>
                   <h3 className="mb-2 text-lg font-bold">아직 초대가 없어요</h3>
-                  <p className="text-muted-foreground">
+                  <p className="mb-6 text-muted-foreground">
                     친구를 초대해서 소개해보세요!
                   </p>
+                  <Button asChild>
+                    <Link href="/create/invite">
+                      <Plus className="mr-2 h-4 w-4" />
+                      친구 초대하기
+                    </Link>
+                  </Button>
                 </div>
               ) : (
                 invitations.map((inv, index) => (
@@ -548,13 +554,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* FAB */}
-        <Link
-          href="/create"
-          className="fixed bottom-24 right-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-strong transition-transform hover:scale-105 active:scale-95"
-        >
-          <Plus className="h-7 w-7" />
-        </Link>
+
       </main>
 
       <BottomNav />
