@@ -4,52 +4,43 @@ import type { ProfilePhoto } from "@/types/database";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySupabaseClient = { storage: any };
 
-interface PhotoInput {
-  file: File;
+export interface UploadedPhotoInput {
+  storagePath: string;
   blurEnabled: boolean;
 }
 
 /**
- * 여러 장의 프로필 사진을 처리하고 업로드합니다.
- * blurEnabled가 true인 사진은 블러 처리된 버전도 생성합니다.
+ * 클라이언트에서 스토리지에 직접 업로드한 사진들에 대해 블러 처리를 합니다.
+ * blurEnabled가 true인 사진은 스토리지에서 다운로드 → sharp 블러 → 재업로드합니다.
  */
-export async function processAndUploadProfileImages(
+export async function processBlurForUploadedPhotos(
   supabase: AnySupabaseClient,
-  photos: PhotoInput[],
-  userId: string,
-  shortId: string
+  uploadedPhotos: UploadedPhotoInput[]
 ): Promise<{ photos: ProfilePhoto[]; photoUrl: string; originalPhotoUrl: string }> {
   const results: ProfilePhoto[] = [];
 
-  for (let i = 0; i < photos.length; i++) {
-    const { file, blurEnabled } = photos[i];
-    const photoBuffer = await file.arrayBuffer();
-    const photoExtension = file.type.split("/")[1];
-    const photoPath = `${userId}/${shortId}/photo_${i}_original.${photoExtension}`;
-
-    // Upload original photo
-    const { error: uploadError } = await supabase.storage
-      .from("profiles")
-      .upload(photoPath, photoBuffer, {
-        contentType: file.type,
-        upsert: true,
-      });
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      throw new Error("사진 업로드에 실패했어요");
-    }
-
+  for (const photo of uploadedPhotos) {
     const { data: originalUrl } = supabase.storage
       .from("profiles")
-      .getPublicUrl(photoPath);
+      .getPublicUrl(photo.storagePath);
 
-    let blurredPublicUrl = originalUrl.publicUrl;
+    let displayUrl = originalUrl.publicUrl;
 
-    if (blurEnabled) {
-      const blurredPath = `${userId}/${shortId}/photo_${i}_blurred.jpeg`;
+    if (photo.blurEnabled) {
+      // 스토리지에서 원본 다운로드
+      const { data: fileData, error: downloadError } = await supabase.storage
+        .from("profiles")
+        .download(photo.storagePath);
 
-      const blurredBuffer = await sharp(Buffer.from(photoBuffer))
+      if (downloadError || !fileData) {
+        console.error("Download error:", downloadError);
+        throw new Error("사진 처리에 실패했어요");
+      }
+
+      const buffer = Buffer.from(await fileData.arrayBuffer());
+      const blurredPath = photo.storagePath.replace(/_original\.\w+$/, "_blurred.jpeg");
+
+      const blurredBuffer = await sharp(buffer)
         .resize(400)
         .blur(30)
         .jpeg({ quality: 60 })
@@ -71,13 +62,13 @@ export async function processAndUploadProfileImages(
         .from("profiles")
         .getPublicUrl(blurredPath);
 
-      blurredPublicUrl = blurredUrl.publicUrl;
+      displayUrl = blurredUrl.publicUrl;
     }
 
     results.push({
-      url: blurredPublicUrl,
+      url: displayUrl,
       originalUrl: originalUrl.publicUrl,
-      blurEnabled,
+      blurEnabled: photo.blurEnabled,
     });
   }
 
@@ -88,22 +79,4 @@ export async function processAndUploadProfileImages(
     photoUrl: first.url,
     originalPhotoUrl: first.originalUrl,
   };
-}
-
-/**
- * @deprecated processAndUploadProfileImages를 사용하세요
- */
-export async function processAndUploadProfileImage(
-  supabase: AnySupabaseClient,
-  file: File,
-  userId: string,
-  shortId: string
-): Promise<{ photoUrl: string; originalPhotoUrl: string }> {
-  const result = await processAndUploadProfileImages(
-    supabase,
-    [{ file, blurEnabled: true }],
-    userId,
-    shortId
-  );
-  return { photoUrl: result.photoUrl, originalPhotoUrl: result.originalPhotoUrl };
 }

@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Check } from "lucide-react";
+import { nanoid } from "nanoid";
 import { Header } from "@/components/layout/header";
 import { PhotoStep } from "@/components/profile/photo-step";
 import { BasicInfoStep } from "@/components/profile/basic-info-step";
 import { PreferencesStep } from "@/components/profile/preferences-step";
 import { Button } from "@/components/ui/button";
 import { submitInviteProfile } from "./actions";
+import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toaster";
 import { useAuth } from "@/hooks/use-auth";
 import type { ProfileFormData } from "@/lib/validations/profile";
@@ -60,17 +62,41 @@ export function InviteProfileForm({
     setIsSubmitting(true);
 
     try {
-      // Build FormData for reliable multi-file upload
-      const fd = new FormData();
-      completeData.photos.forEach((p, i) => {
-        fd.append(`photo_${i}`, p.file);
-        fd.append(`blur_${i}`, String(p.blurEnabled));
-      });
-      fd.append("photoCount", String(completeData.photos.length));
-      const { photos: _photos, ...profileData } = completeData;
-      fd.append("data", JSON.stringify(profileData));
+      // 클라이언트에서 Supabase Storage에 직접 업로드
+      const supabase = createClient();
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      if (authError || !authUser) {
+        toast({ title: "오류", description: "로그인이 필요해요", variant: "destructive" });
+        return;
+      }
 
-      const result = await submitInviteProfile(inviteCode, fd);
+      const uploadId = nanoid(8);
+      const uploadedPhotos: { storagePath: string; blurEnabled: boolean }[] = [];
+
+      for (let i = 0; i < completeData.photos.length; i++) {
+        const p = completeData.photos[i];
+        const ext = p.file.type.split("/")[1];
+        const storagePath = `${authUser.id}/${uploadId}/photo_${i}_original.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("profiles")
+          .upload(storagePath, p.file, {
+            contentType: p.file.type,
+            upsert: true,
+          });
+
+        if (uploadError) {
+          console.error("Storage upload error:", uploadError);
+          toast({ title: "오류", description: "사진 업로드에 실패했어요", variant: "destructive" });
+          return;
+        }
+
+        uploadedPhotos.push({ storagePath, blurEnabled: p.blurEnabled });
+      }
+
+      // 서버 액션에는 경로만 전달
+      const { photos: _photos, ...profileData } = completeData;
+      const result = await submitInviteProfile(inviteCode, uploadedPhotos, profileData);
 
       if (result.error) {
         toast({

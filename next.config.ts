@@ -10,15 +10,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.kakaocdn.net",
+        hostname: "*.kakaocdn.net",
       },
     ],
   },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "50mb",
-    },
-  },
+  experimental: {},
   async headers() {
     return [
       {

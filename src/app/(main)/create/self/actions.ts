@@ -4,10 +4,14 @@ import { nanoid } from "nanoid";
 import { createClient } from "@/lib/supabase/server";
 import { serverProfileDataSchema, MAX_PHOTOS } from "@/lib/validations/profile";
 import { PROFILE_EXPIRY_HOURS, MAX_DAILY_PROFILE_CREATIONS } from "@/lib/constants";
-import { processAndUploadProfileImages } from "@/lib/image-processing";
+import { processBlurForUploadedPhotos } from "@/lib/image-processing";
+import type { UploadedPhotoInput } from "@/lib/image-processing";
 import type { InsertTables } from "@/types/database";
 
-export async function createSelfProfile(formData: FormData) {
+export async function createSelfProfile(
+  uploadedPhotos: UploadedPhotoInput[],
+  rawProfileData: Record<string, unknown>
+) {
   try {
     const supabase = await createClient();
 
@@ -20,33 +24,20 @@ export async function createSelfProfile(formData: FormData) {
       return { error: "로그인이 필요해요" };
     }
 
-    // Extract photos from FormData
-    const photoCount = parseInt(formData.get("photoCount") as string) || 0;
-    if (photoCount < 1 || photoCount > MAX_PHOTOS) {
+    // Validate uploaded photos count
+    if (uploadedPhotos.length < 1 || uploadedPhotos.length > MAX_PHOTOS) {
       return { error: `사진을 1~${MAX_PHOTOS}장 업로드해주세요` };
     }
 
-    const photos: { file: File; blurEnabled: boolean }[] = [];
-    for (let i = 0; i < photoCount; i++) {
-      const file = formData.get(`photo_${i}`);
-      if (!file || !(file instanceof File)) {
-        return { error: "사진 파일을 확인해주세요" };
+    // Validate that storage paths belong to the authenticated user
+    for (const photo of uploadedPhotos) {
+      if (!photo.storagePath.startsWith(`${user.id}/`)) {
+        return { error: "잘못된 사진 경로입니다" };
       }
-      if (file.size > 10 * 1024 * 1024) {
-        return { error: "10MB 이하의 사진만 업로드 가능해요" };
-      }
-      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-        return { error: "JPG, PNG, WebP 형식만 가능해요" };
-      }
-      photos.push({
-        file,
-        blurEnabled: formData.get(`blur_${i}`) === "true",
-      });
     }
 
     // Validate other fields
-    const rawData = JSON.parse(formData.get("data") as string);
-    const validationResult = serverProfileDataSchema.safeParse(rawData);
+    const validationResult = serverProfileDataSchema.safeParse(rawProfileData);
     if (!validationResult.success) {
       return { error: validationResult.error.errors[0].message };
     }
@@ -87,12 +78,10 @@ export async function createSelfProfile(formData: FormData) {
       return { error: "링크 생성에 실패했어요. 다시 시도해주세요." };
     }
 
-    // Process and upload images (다중 사진)
-    const { photos: processedPhotos, photoUrl, originalPhotoUrl } = await processAndUploadProfileImages(
+    // Process blur for uploaded photos (스토리지에서 다운로드 → sharp 블러 → 재업로드)
+    const { photos: processedPhotos, photoUrl, originalPhotoUrl } = await processBlurForUploadedPhotos(
       supabase,
-      photos,
-      user.id,
-      shortId
+      uploadedPhotos
     );
 
     // Calculate expiry time (즉시 활성화)
