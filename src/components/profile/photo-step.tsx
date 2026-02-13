@@ -119,6 +119,7 @@ export function PhotoStep({ defaultValues, onNext }: PhotoStepProps) {
             <div className="mb-4 grid grid-cols-3 gap-2">
               {photos.map((photo, index) => (
                 <div key={index} className="relative aspect-square overflow-hidden rounded-xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.preview}
                     alt={`사진 ${index + 1}`}

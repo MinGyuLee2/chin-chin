@@ -21,7 +21,6 @@ import type { ChatRoom, Profile } from "@/types/database";
 
 interface ChatHeaderProps {
   room: ChatRoom & { profile: Profile };
-  currentUserId: string;
   onRequestReveal: () => Promise<void>;
   onExpire?: () => void;
   profileShortId?: string;
@@ -29,7 +28,6 @@ interface ChatHeaderProps {
 
 export function ChatHeader({
   room,
-  currentUserId,
   onRequestReveal,
   onExpire,
   profileShortId,

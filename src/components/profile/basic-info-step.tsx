@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,7 +37,7 @@ export function BasicInfoStep({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<BasicInfoFormData>({
     resolver: zodResolver(basicInfoSchema),
@@ -49,8 +49,8 @@ export function BasicInfoStep({
     },
   });
 
-  const selectedGender = watch("gender");
-  const bioLength = watch("bio")?.length || 0;
+  const selectedGender = useWatch({ control, name: "gender" });
+  const bioLength = useWatch({ control, name: "bio" })?.length || 0;
 
   const onSubmit = (data: BasicInfoFormData) => {
     onNext(data);

@@ -80,7 +80,8 @@ export default function CreateSelfProfilePage() {
       }
 
       // 서버 액션에는 경로만 전달 (파일 없음)
-      const { photos: _photos, ...profileData } = completeData;
+      const profileData: Record<string, unknown> = { ...completeData };
+      delete profileData.photos;
       const result = await createSelfProfile(uploadedPhotos, profileData);
 
       if (result.error) {

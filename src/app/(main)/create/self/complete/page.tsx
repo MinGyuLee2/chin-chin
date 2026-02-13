@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -181,10 +182,12 @@ function SelfCompleteContent() {
           >
             <Card className="mb-6 overflow-hidden">
               <div className="relative aspect-[4/3] bg-muted">
-                <img
+                <Image
                   src={profile.photo_url}
                   alt="Profile"
-                  className="h-full w-full object-cover blur-xl"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 448px"
+                  className="object-cover blur-xl"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                   <Logo size="md" asLink={false} />

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useEffect } from "react";
 import { Home, PlusCircle, MessageCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,20 +15,7 @@ interface NavItem {
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { user, isLoading } = useAuth();
-
-  // user 상태를 캐시해서 빠른 리렌더링 시에도 안정적으로 유지
-  const cachedUserRef = useRef<typeof user>(null);
-
-  useEffect(() => {
-    // 로딩이 완료되었을 때만 캐시 업데이트
-    if (!isLoading) {
-      cachedUserRef.current = user;
-    }
-  }, [user, isLoading]);
-
-  // 로딩 중이면 캐시된 user 사용, 아니면 현재 user 사용
-  const stableUser = isLoading ? cachedUserRef.current : user;
+  const { user } = useAuth();
 
   // Hide on login page and individual chat pages
   if (pathname === "/login" || pathname.startsWith("/chat/")) {
@@ -70,7 +56,7 @@ export function BottomNav() {
           // 비활성화된 페이지일 때만 auth 체크
           const href = isActive
             ? item.href  // 현재 페이지는 항상 원래 경로
-            : (item.requiresAuth && !stableUser)
+            : (item.requiresAuth && !user)
               ? `/login?redirect=${item.href}`
               : item.href;
 

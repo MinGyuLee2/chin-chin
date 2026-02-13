@@ -41,7 +41,7 @@ export const basicInfoSchema = z.object({
   }),
   occupationCategory: z
     .string({ required_error: "직업을 선택해주세요" })
-    .refine((val) => OCCUPATION_CATEGORIES.includes(val as any), {
+    .refine((val) => OCCUPATION_CATEGORIES.some((category) => category === val), {
       message: "올바른 직업을 선택해주세요",
     }),
   bio: z
@@ -56,19 +56,19 @@ export const preferencesSchema = z.object({
     .array(z.string())
     .length(3, "취향 키워드를 정확히 3개 선택해주세요")
     .refine(
-      (tags) => tags.every((tag) => INTEREST_TAGS.includes(tag as any)),
+      (tags) => tags.every((tag) => INTEREST_TAGS.some((item) => item === tag)),
       { message: "올바른 키워드를 선택해주세요" }
     ),
   mbti: z
     .string()
     .optional()
-    .refine((val) => !val || MBTI_TYPES.includes(val as any), {
+    .refine((val) => !val || MBTI_TYPES.some((item) => item === val), {
       message: "올바른 MBTI를 선택해주세요",
     }),
   musicGenre: z
     .string()
     .optional()
-    .refine((val) => !val || MUSIC_GENRES.includes(val as any), {
+    .refine((val) => !val || MUSIC_GENRES.some((item) => item === val), {
       message: "올바른 장르를 선택해주세요",
     }),
   instagramId: z

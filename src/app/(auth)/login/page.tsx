@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/common/logo";
 import { Button } from "@/components/ui/button";
 
@@ -14,9 +13,6 @@ export default function LoginPage() {
 }
 
 function LoginContent() {
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
-
   const handleKakaoLogin = () => {
     const kakaoClientId = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;

@@ -95,7 +95,8 @@ export function InviteProfileForm({
       }
 
       // 서버 액션에는 경로만 전달
-      const { photos: _photos, ...profileData } = completeData;
+      const profileData: Record<string, unknown> = { ...completeData };
+      delete profileData.photos;
       const result = await submitInviteProfile(inviteCode, uploadedPhotos, profileData);
 
       if (result.error) {

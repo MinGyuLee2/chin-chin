@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ export function PreferencesStep({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<PreferencesFormData>({
     resolver: zodResolver(preferencesSchema),
@@ -51,7 +51,7 @@ export function PreferencesStep({
     },
   });
 
-  const selectedTags = watch("interestTags") || [];
+  const selectedTags = useWatch({ control, name: "interestTags" }) || [];
 
   const toggleTag = (tag: string) => {
     const current = selectedTags;

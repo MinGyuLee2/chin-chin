@@ -76,8 +76,9 @@ export default function ChatRoomPage({ params }: Props) {
   // Subscribe to room changes (status, reveal)
   useEffect(() => {
     if (!user) return;
+    const supabase = supabaseRef.current;
 
-    const channel = supabaseRef.current
+    const channel = supabase
       .channel(`room_status:${roomId}`)
       .on(
         "postgres_changes",
@@ -97,7 +98,7 @@ export default function ChatRoomPage({ params }: Props) {
       .subscribe();
 
     return () => {
-      supabaseRef.current.removeChannel(channel);
+      supabase.removeChannel(channel);
     };
   }, [user, roomId]);
 
@@ -219,7 +220,6 @@ export default function ChatRoomPage({ params }: Props) {
       ) : (
         <ChatHeader
           room={room as ChatRoom & { profile: Profile }}
-          currentUserId={user.id}
           onRequestReveal={handleRequestReveal}
           onExpire={handleExpire}
           profileShortId={room.profile?.short_id}

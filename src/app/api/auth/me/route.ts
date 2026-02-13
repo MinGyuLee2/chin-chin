@@ -25,7 +25,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ user });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ user: null, error: "Internal error" });
   }
 }

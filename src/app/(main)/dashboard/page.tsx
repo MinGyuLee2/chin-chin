@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -17,7 +17,6 @@ import {
   ChevronUp,
   Share2,
   Instagram,
-  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,7 +48,6 @@ type InvitationWithProfile = Invitation & {
 };
 
 export default function DashboardPage() {
-  const router = useRouter();
   const { user, signOut, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [tab, setTab] = useState<TabType>("invitations");
@@ -197,10 +195,6 @@ export default function DashboardPage() {
       window.open("instagram://story-camera", "_blank");
     }, 500);
   };
-
-  // Stats
-  const activeInvitations = invitations.filter((inv) => inv.status === "shared" && inv.profile).length;
-  const activeSelfProfiles = selfProfiles.filter((p) => !isExpired(p.expires_at) && p.is_active).length;
 
   if (authLoading) {
     return (
@@ -456,10 +450,12 @@ export default function DashboardPage() {
                           <div className="flex gap-4">
                             {/* Thumbnail */}
                             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl">
-                              <img
+                              <Image
                                 src={profile.photo_url}
                                 alt=""
-                                className="h-full w-full object-cover blur-lg"
+                                fill
+                                sizes="96px"
+                                className="object-cover blur-lg"
                               />
                               {expired && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40">
